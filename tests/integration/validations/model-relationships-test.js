@@ -1,9 +1,14 @@
+// We should not be using `import DS from 'ember-data'`, but this is pretty much
+// how we can solve imports of `PromiseArray` & `PromiseObject` for both below
+// 4.5 and above.
+//
+// eslint-disable-next-line ember/use-ember-data-rfc-395-imports
+import DS from 'ember-data';
 import { Promise as EmberPromise } from 'rsvp';
 import ArrayProxy from '@ember/array/proxy';
 import EmberObject from '@ember/object';
 import { isNone } from '@ember/utils';
 import { A as emberArray } from '@ember/array';
-import { PromiseArray, PromiseObject } from '@ember-data/store/-private';
 import setupObject from '../../helpers/setup-object';
 import DefaultMessages from 'dummy/validators/messages';
 import BelongsToValidator from 'ember-cp-validations/validators/belongs-to';
@@ -13,6 +18,8 @@ import PresenceValidator from 'ember-cp-validations/validators/presence';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+
+const { PromiseArray, PromiseObject } = DS;
 
 const Validators = {
   presence(value, options, model, attr) {

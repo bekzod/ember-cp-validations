@@ -390,53 +390,52 @@ module('Unit | Validations | Nested Model Relationships', function (hooks) {
 
   test('order with invalid question shows valid if invalid question is deleted in reverse order', function (assert) {
     assert.expect(9);
-    let order = run(() =>
-      this.owner
-        .lookup('service:store')
-        .createRecord('order', { id: 1, source: 'external' })
-    );
-
-    let orderLine,
-      orderSelection,
-      orderSelectionQuestion,
-      orderSelectionQuestion2;
-
     let store = this.owner.lookup('service:store');
-    run(() => {
-      let fakeSave = function (model) {
-        model.get('_internalModel').adapterWillCommit();
-        model.get('_internalModel').adapterDidCommit();
-      };
 
-      orderLine = store.createRecord('order-line', {
+    let payload = {
+      order: {
         id: 1,
-        order,
+        source: 'external',
+      },
+      orderLine: {
+        id: 1,
+        order: 1,
         type: 'item',
-      });
-      orderSelection = store.createRecord('order-selection', {
+      },
+      orderSelection: {
         id: 1,
-        order,
-        line: orderLine,
+        order: 1,
+        line: 1,
         quantity: 1,
-      });
-      orderSelectionQuestion = store.createRecord('order-selection-question', {
-        id: 1,
-        order,
-        selection: orderSelection,
-        text: 'answer',
-      });
-      orderSelectionQuestion2 = store.createRecord('order-selection-question', {
-        id: 2,
-        order,
-        selection: orderSelection,
-      });
+      },
+      orderSelectionQuestions: [
+        {
+          id: 1,
+          order: 1,
+          selection: 1,
+          text: 'answer',
+        },
+        {
+          id: 2,
+          order: 1,
+          selection: 1,
+        },
+      ],
+    };
 
-      fakeSave(order);
-      fakeSave(orderLine);
-      fakeSave(orderSelection);
-      fakeSave(orderSelectionQuestion);
-      fakeSave(orderSelectionQuestion2);
-    });
+    store.pushPayload(payload);
+
+    let order = store.peekRecord('order', 1);
+    let orderLine = store.peekRecord('order-line', 1);
+    let orderSelection = store.peekRecord('order-selection', 1);
+    let orderSelectionQuestion = store.peekRecord(
+      'order-selection-question',
+      1
+    );
+    let orderSelectionQuestion2 = store.peekRecord(
+      'order-selection-question',
+      2
+    );
 
     assert.equal(order.get('lines.length'), 1, 'Order has 1 Order Line');
     assert.equal(

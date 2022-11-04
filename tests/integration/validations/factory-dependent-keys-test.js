@@ -1,6 +1,9 @@
 import { A } from '@ember/array';
 import EmberObject from '@ember/object';
 import { Errors } from '@ember-data/model/-private';
+import { attr } from '@ember-data/model';
+import Model from '@ember-data/model';
+import Store from '@ember-data/store';
 import setupObject from '../../helpers/setup-object';
 import CollectionValidator from 'dummy/validators/collection';
 import LengthValidator from 'dummy/validators/length';
@@ -9,10 +12,21 @@ import { validator, buildValidations } from 'ember-cp-validations';
 import { module, test, skip } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
+function registerUser(context, modelClass) {
+  context.owner.register('model:user', modelClass);
+}
+
+let store;
+
 module(
   'Integration | Validations | Factory - Dependent Keys',
   function (hooks) {
     setupTest(hooks);
+
+    hooks.beforeEach(function () {
+      this.owner.register('service:store', Store);
+      store = this.owner.lookup('service:store');
+    });
 
     test('collection validator creates correct dependent keys', function (assert) {
       this.owner.register('validator:collection', CollectionValidator);
@@ -42,21 +56,26 @@ module(
       );
     });
 
-    test('ds-error validator creates correct dependent keys', function (assert) {
+    test('ds-error validator creates correct dependent keys', async function (assert) {
       this.owner.register('validator:ds-error', DSErrorValidator);
       this.owner.register('validator:length', LengthValidator);
 
       let DSErrorValidations = buildValidations({
         username: validator('ds-error'),
       });
-      let obj = setupObject(this, EmberObject.extend(DSErrorValidations), {
-        errors: Errors.create(),
-        username: '',
-      });
+
+      registerUser(
+        this,
+        class extends Model.extend(DSErrorValidations) {
+          @attr('string') username;
+        }
+      );
+
+      let obj = store.createRecord('user');
 
       assert.equal(obj.get('validations.attrs.username.isValid'), true);
 
-      obj.get('errors').add('username', 'Username is not unique');
+      obj.errors.add('username', 'Username is not unique');
 
       assert.equal(obj.get('validations.attrs.username.isValid'), false);
       assert.equal(
