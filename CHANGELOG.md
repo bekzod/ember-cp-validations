@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.0.0-beta.2
+
+- [#24](https://github.com/qonto/ember-cp-validations/pull/24) Fix tests for ember-data@^4.5 [@zeppelin](https://github.com/zeppelin)
+- [#23](https://github.com/qonto/ember-cp-validations/pull/23) Ensure Ember Data 4.4 compatibility [@zeppelin](https://github.com/zeppelin)
+- [#22](https://github.com/qonto/ember-cp-validations/pull/22) Bump Node version to 16 [@zeppelin](https://github.com/zeppelin)
+- [#20](https://github.com/qonto/ember-cp-validations/pull/20) Use require instead of import to make Embroider happy [@zeppelin](https://github.com/zeppelin)
+
 ## v5.0.0-beta.1
 
 - [#18](https://github.com/qonto/ember-cp-validations/pull/18) 💥 Breaking: Remove volatile support & enable Ember 4 tests [@zeppelin](https://github.com/zeppelin)
