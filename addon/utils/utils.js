@@ -65,7 +65,7 @@ export function getValidatableValue(value) {
   }
 
   if (isDSManyArray(value)) {
-    return emberArray(value.filter((v) => isValidatable(v)));
+    return emberArray(value.toArray().filter((v) => isValidatable(v)));
   }
 
   return isValidatable(value) ? value : undefined;
